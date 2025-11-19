@@ -34,26 +34,6 @@ else
 fi
 echo ""
 
-# 3. 检查 Node.js
-echo "📗 3. 检查 Node.js..."
-if command -v node &> /dev/null; then
-    NODE_VERSION=$(node -v)
-    echo "✓ Node.js 已安装: $NODE_VERSION"
-    
-    # 检查版本是否 >= 16
-    MAJOR_VERSION=$(echo $NODE_VERSION | cut -d'.' -f1 | sed 's/v//')
-    if [ "$MAJOR_VERSION" -lt 16 ]; then
-        echo "⚠️  Node.js 版本过低，建议升级到 16+"
-    fi
-else
-    echo "❌ Node.js 未安装"
-    echo "请先安装 Node.js 16:"
-    echo "  curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -"
-    echo "  sudo yum install -y nodejs"
-    exit 1
-fi
-echo ""
-
 # 4. 安装其他必需的库
 echo "📚 4. 安装其他依赖库..."
 sudo yum install -y \
