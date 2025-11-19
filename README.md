@@ -1,250 +1,127 @@
-# JavaScript 在线控制台
+# JavaScript Console
 
-一个现代化的在线JavaScript执行环境，提供类似Chrome DevTools控制台的体验。
+一个类似 Chrome 控制台的在线 JavaScript 执行环境，使用 Node.js 原生 `vm` 模块实现。
 
-## ✨ 功能特性
+## ✨ 特性
 
-- 🎨 **现代化UI设计** - 支持暗色/亮色主题切换，界面美观流畅
-- ✨ **Monaco Editor** - 集成VS Code同款编辑器，提供智能代码提示
-- 🚀 **实时执行** - 即时执行JavaScript代码并显示结果
-- 📝 **完整Console API支持**
-  - `console.log()` - 标准日志输出
-  - `console.error()` - 错误信息输出
-  - `console.warn()` - 警告信息输出
-  - `console.info()` - 信息输出
-  - `console.table()` - 表格化数据显示
-  - `console.time()` / `console.timeEnd()` - 性能计时
-- 🌐 **Fetch API支持**
-  - 安全的网络请求功能
-  - 域名白名单保护
-  - 可配置的超时和限制
-- 🔒 **安全沙箱** - 使用 isolated-vm 提供安全的代码执行环境
-- ⏱️ **超时控制** - 5秒执行超时，防止无限循环
-- 💾 **代码保存** - 支持保存和加载代码到浏览器本地存储
-- 📚 **示例代码库** - 内置多个学习示例，快速上手
-- 📜 **执行历史** - 记录所有执行过的代码
-- ⌨️ **快捷键支持** - Cmd/Ctrl + Enter 快速执行代码
-- 📱 **响应式设计** - 完美支持桌面和移动设备
+- ✅ **无需编译依赖** - 使用原生 vm 模块，不需要 GCC/Python
+- ✅ **部署简单** - 只需 Node.js 和 npm
+- ✅ **完整功能** - 支持 console、fetch、Promise、async/await
+- ✅ **现代界面** - 基于 React + Monaco Editor
+- ✅ **多种部署** - 支持直接运行、PM2、Docker
 
-## 🛠️ 技术栈
+## 🚀 快速开始
 
-- **前端**: 
-  - React 18 - UI框架
-  - Vite - 构建工具
-  - Monaco Editor - 代码编辑器
-  - CSS Variables - 主题系统
-  
-- **后端**: 
-  - Node.js - 运行环境
-  - Express - Web框架
-  - isolated-vm - 安全沙箱（替代已弃用的vm2）
-  
-## 📦 安装和运行
-
-### 开发环境
+### 开发模式
 
 ```bash
-# 1. 克隆项目
-git clone <your-repo-url>
-cd console
-
-# 2. 安装依赖
 npm install
-
-# 3. 开发模式（同时启动前后端）
 npm run dev
-
-# 4. 访问应用
-# 前端: http://localhost:5173
-# 后端API: http://localhost:3000
 ```
 
-### 单独启动
+访问：http://localhost:5173
+
+### 生产模式
 
 ```bash
-# 只启动前端
-npm run client
-
-# 只启动后端
-npm run server
-```
-
-## 🚀 生产部署
-
-### 方式一：使用构建后的静态文件
-
-```bash
-# 1. 构建前端
+npm install
 npm run build
-
-# 2. 将 dist 目录部署到你的静态文件服务器
-
-# 3. 启动后端API服务器
-npm run server
+npm start
 ```
 
-### 方式二：使用 Express 同时托管
+访问：http://localhost:3000
+
+### 一键部署
 
 ```bash
-# 1. 构建前端
+chmod +x deploy-vm.sh
+./deploy-vm.sh
+```
+
+## 📋 功能支持
+
+| 功能 | 支持 |
+|------|------|
+| console.log/error/warn/info | ✅ |
+| console.table | ✅ |
+| console.time/timeEnd | ✅ |
+| Promise/async/await | ✅ |
+| Fetch API | ✅ |
+| setTimeout/setInterval | ✅ |
+| ES6+ 语法 | ✅ |
+
+## 📝 npm 命令
+
+| 命令 | 说明 |
+|------|------|
+| `npm install` | 安装依赖 |
+| `npm run dev` | 开发模式（前端+后端） |
+| `npm run server:vm` | 仅启动后端 |
+| `npm run build` | 构建前端 |
+| `npm start` | 启动生产服务器 |
+
+## 🐳 Docker 部署
+
+```bash
 npm run build
-
-# 2. 修改 server/index.js，添加静态文件服务
-# 在文件中添加：
-# app.use(express.static('dist'));
-
-# 3. 启动服务器
-NODE_ENV=production node server/index.js
+docker build -f Dockerfile.vm -t js-console .
+docker run -d -p 3000:3000 --name js-console js-console
 ```
 
-### Docker 部署（可选）
-
-创建 `Dockerfile`:
-
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["node", "server/index.js"]
-```
-
-构建和运行：
+## 📦 PM2 部署
 
 ```bash
-docker build -t js-console .
-docker run -p 3000:3000 js-console
+npm install -g pm2
+npm run build
+pm2 start ecosystem.vm.config.cjs
+pm2 save
 ```
 
-## 🔒 安全说明
+## 🔧 配置
 
-应用使用 `isolated-vm` 创建严格的沙箱环境，提供以下安全保护：
-
-- ✅ **内存限制** - 每次执行限制128MB内存
-- ✅ **时间限制** - 5秒执行超时，防止死循环
-- ✅ **隔离环境** - 完全隔离的JavaScript执行环境
-- ✅ **无文件系统访问** - 无法访问服务器文件系统
-- ✅ **无网络请求** - 阻止任何网络调用
-- ✅ **禁用危险API** - setTimeout、setInterval等被禁用
-- ✅ **代码长度限制** - 最大50KB代码
-
-**注意**: 尽管提供了多层安全保护，但在生产环境中，建议：
-1. 使用 HTTPS
-2. 添加用户认证
-3. 实施速率限制
-4. 监控服务器资源使用
-5. 定期更新依赖包
-
-## 📖 API文档
-
-### POST /api/execute
-
-执行JavaScript代码
-
-**请求体**:
-```json
-{
-  "code": "console.log('Hello World');"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "result": "undefined",
-  "logs": [
-    {
-      "type": "log",
-      "content": "Hello World",
-      "timestamp": 1234567890
-    }
-  ],
-  "errors": []
-}
-```
-
-### GET /api/examples
-
-获取示例代码列表
-
-### GET /api/health
-
-健康检查
-
-## 🎯 使用示例
-
-### 基础输出
-```javascript
-console.log("Hello, World!");
-const sum = 1 + 2 + 3;
-console.log("Sum:", sum);
-```
-
-### 数组操作
-```javascript
-const numbers = [1, 2, 3, 4, 5];
-const doubled = numbers.map(x => x * 2);
-console.log("Doubled:", doubled);
-```
-
-### 对象和表格
-```javascript
-const users = [
-  { name: "Alice", age: 25 },
-  { name: "Bob", age: 30 }
-];
-console.table(users);
-```
-
-### 性能测试
-```javascript
-console.time("Loop");
-let sum = 0;
-for (let i = 0; i < 1000000; i++) {
-  sum += i;
-}
-console.timeEnd("Loop");
-```
-
-### Fetch API 请求
+编辑 `server/config.js`：
 
 ```javascript
-async function fetchData() {
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
-  const data = await response.json();
-  console.table(data);
-}
-
-fetchData();
+export const config = {
+  port: 3000,
+  execution: {
+    timeout: 10000,
+    maxCodeLength: 50000,
+  },
+  fetch: {
+    enabled: true,
+    timeout: 10000,
+    allowAllDomains: true,
+  },
+};
 ```
 
-**注意**: 默认只允许访问白名单中的域名，详见 [FETCH_API.md](./FETCH_API.md)
+## 🎯 API 端点
 
-## 🤝 贡献
+- `POST /api/execute` - 执行 JavaScript 代码
+- `GET /api/examples` - 获取示例代码
+- `GET /api/health` - 健康检查
 
-欢迎提交 Issue 和 Pull Request！
+## ⚠️ 安全提醒
 
-## 📝 许可证
+本项目使用 Node.js 原生 `vm` 模块，适合：
+- ✅ 个人学习和开发
+- ✅ 内部团队工具
+- ✅ 受信任的代码执行
 
-MIT License
+**不适合执行不受信任的代码或作为公开服务。**
 
-## 🔗 相关资源
+## 📚 详细文档
 
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/)
-- [isolated-vm](https://github.com/laverdet/isolated-vm)
-- [Express.js](https://expressjs.com/)
+更多信息请查看 [部署指南](./VM_DEPLOY.md)
+
+## 📄 许可证
+
+MIT
+
+## 🙏 致谢
+
+- [Express](https://expressjs.com/)
 - [React](https://react.dev/)
-
----
-
-如有问题或建议，请创建 Issue 或联系作者。
-
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+- [node-fetch](https://github.com/node-fetch/node-fetch)
